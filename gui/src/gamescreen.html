@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,23 +8,103 @@
     <title>Document</title>
 
     <style>
-
         body {
             background-color: black;
         }
 
         .container {
             padding: 20px;
+            font-family: sans-serif;
+        }
+
+        .scoreScreen {
+            color: white;
+            display: flex;
+            justify-content: space-between;
+
+        }
+
+        .playerMoves {
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            text-align: center;
+            color: white;
+            gap: 2em;
+        }
+
+        .playerMoves>.button {
+            width: 100px;
+            height: 50px;
+            background: green;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.6s;
+            opacity: 70%;
+        }
+
+        .playerMoves>.button:hover {
+            transform: scale(1.05);
+            opacity: 100%;
         }
     </style>
 </head>
+
 <body>
-    
+
 
     <div class="container">
-        
-    </div>  
-    
+        <div class="scoreScreen">
+            <p class="playerScore">
+                Player: 0
+            </p>
+            <p class="computerScore">
+                Computer: 0
+            </p>
+        </div>
+
+        <div class="playerMoves">
+            <div class="rock button">
+                <p>Rock</p>
+            </div>
+            <div class="rock button">
+                <p>Paper</p>
+
+            </div>
+            <div class="rock button">
+                <p>Scissor</p>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script>
+        class Game {
+            constructor() {
+
+                this.playerName = "";
+                this.computerScore = 0;
+                this.playerScore = 0;
+            }
+
+
+
+
+
+
+
+
+        }
+
+
+        window.onload = () => {
+            window.game = new Game();
+        }
+    </script>
 
 </body>
+
 </html>
