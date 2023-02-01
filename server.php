@@ -34,13 +34,31 @@ class Application
         return json_encode(json_decode(file_get_contents("./logs.json")));
     }
 
-    function add_item_to_list($name, $win, $loose)
+    function add_item_to_list($name, $win, $lose)
     {
         $name_exist = false;
+        $index_at_exists = 0;
         // return $this->curr_data;
         foreach ($this->curr_data as $key => $value) {
-           print_r($value);
+            if ($value->name == $name) {
+                $name_exist = true;
+                $index_at_exists = $key;
+            }
         }
+
+        if ($name_exist) {
+            $this->curr_data[$index_at_exists]->win = $win;
+            $this->curr_data[$index_at_exists]->lose = $lose;
+            file_put_contents("./logs.json", json_encode($this->curr_data));
+        }
+
+        if ($name_exist == false) {
+            $new_data = ["name" => $name, "win" => $win, "lose" => $lose];
+            array_push($this->curr_data, $new_data);
+            file_put_contents("./logs.json", json_encode($this->curr_data));
+        }
+
+        echo json_encode(array("response" => "operation successfull"));
     }
 }
 
