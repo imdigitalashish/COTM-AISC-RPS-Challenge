@@ -120,8 +120,26 @@
         }
 
 
+        .userDetailScreen {
+            height: 100vh;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
         .concludeScreen {
             height: 100vh;
+        }
+
+        .UserDetailcontainer>input {
+            padding: 10px;
+            outline: none;
+            border-radius: 10px;
+            margin-top: 1em;
+
         }
     </style>
 </head>
@@ -173,6 +191,13 @@
                 </div>
             </div>
         </div>
+        <div class="userDetailScreen">
+            <div class="UserDetailcontainer container">
+                <h1 class="resultDisplayHere"></h1>
+                <h2>Your Name</h2>
+                <input class="inputText" type="text">
+            </div>
+        </div>
         <div class="concludeScreen">
         </div>
     </div>
@@ -193,6 +218,24 @@
                 this.playerDisplay = document.querySelector(".playerDisplay");
                 this.computerDisplay = document.querySelector(".computerDisplay");
 
+                this.gameState = {
+                    add: "true",
+                    uname: "",
+                    win: 0,
+                    lose: 0,
+                }
+                this.initiateGameScreen();
+                this.baseURL = "http://localhost:9020";
+
+
+            }
+
+            initiateGameScreen() {
+                console.log(!!localStorage.getItem("gameState"));
+                if (!!localStorage.getItem("gameState")) {
+                    this.gameState = JSON.parse(localStorage.getItem("gameState"));
+                    console.log(this.gameState);
+                }
             }
 
             fillTries() {
@@ -212,6 +255,25 @@
                 document.querySelector(".computerScore").innerHTML = `Computer: ${this.computerScore}`;
             }
 
+
+            setName(name) {
+                this.gameState.uname = name;
+                localStorage.setItem("gameState", JSON.stringify(this.gameState));
+
+
+                this.uploadToServer();
+            }
+
+            async uploadToServer() {
+                let request = await fetch(`${this.baseURL}/server.php`, {
+                    method: "POST",
+                    body: JSON.stringify(this.gameState)
+                });
+                let response = await request.json();
+                console.log(response);
+                this.gotoScreen.concludeScreen();
+
+            }
 
 
             playComputer() {
@@ -265,9 +327,37 @@
                 player1 != player2 ? this.tries-- : "";
                 if (this.tries === 0) {
                     console.log("STOP THE GAME");
-                    document.querySelector(".appScreen").style.transform = "translateY(-100vh)";
+                    if (this.playerScore > this.computerScore) {
+                        this.gameState.win++;
+
+                    } else {
+                        this.gameState.lose++;
+                    }
+                    this.gotoScreen.userInputScreen();
                 }
                 this.fillTries();
+            }
+
+            gotoScreen = {
+                userInputScreen: () => {
+
+                    if (this.gameState.uname != "") {
+                        this.uploadToServer();
+                        return;
+                    }
+
+                    this.playerScore > this.computerScore ?
+                        document.querySelector(".resultDisplayHere").innerHTML = "You won !!" :
+                        document.querySelector(".resultDisplayHere").innerHTML = "Lose !, Don't worry Try again";
+
+                    document.querySelector(".appScreen").style.transform = "translateY(-100vh)";
+
+                },
+
+                concludeScreen: () => {
+                    document.querySelector(".appScreen").style.transform = "translateY(-200vh)";
+                }
+
             }
 
 
@@ -277,6 +367,14 @@
                     e.addEventListener("click", (e) => {
                         this.startGame((e.target.getAttribute("data-move")));
                     })
+                });
+
+
+                document.querySelector(".inputText").addEventListener("keypress", (e) => {
+                    if (e.code === "Enter") {
+                        this.setName(e.target.value);
+
+                    }
                 })
             }
 

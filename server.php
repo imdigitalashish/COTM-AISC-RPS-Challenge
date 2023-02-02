@@ -1,7 +1,7 @@
 <?php
 
 header("Content-Type: json");
-header("Allow-Origin: *");
+header('Access-Control-Allow-Origin: *');
 
 $curr_data = file_get_contents("./logs.json");
 $curr_data = json_decode($curr_data);
