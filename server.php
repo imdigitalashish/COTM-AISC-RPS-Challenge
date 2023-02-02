@@ -62,6 +62,12 @@ class Application
     }
 }
 
-$requestData = json_decode(json_encode(file_get_contents("php://input")));
-$app = new Application();
-$app->handle_routes(json_decode($requestData, true));
+if (isset($_GET["get_all"])) {
+    $requestData = json_decode(json_encode(file_get_contents("php://input")));
+    $app = new Application();
+    echo $app->return_all_data();
+} else {
+    $requestData = json_decode(json_encode(file_get_contents("php://input")));
+    $app = new Application();
+    $app->handle_routes(json_decode($requestData, true));
+}

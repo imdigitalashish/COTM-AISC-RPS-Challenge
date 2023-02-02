@@ -26,7 +26,7 @@
 
         .appScreen {
             overflow: hidden;
-            /* height: 100vh; */
+            height: 100vh;
         }
 
 
@@ -132,6 +132,14 @@
 
         .concludeScreen {
             height: 100vh;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            padding-top: 3em;
+
+
         }
 
         .UserDetailcontainer>input {
@@ -140,6 +148,23 @@
             border-radius: 10px;
             margin-top: 1em;
 
+        }
+
+
+        table {
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            padding-inline: 3em;
+        }
+
+        table tr {
+            padding-top: 2em;
         }
     </style>
 </head>
@@ -199,6 +224,24 @@
             </div>
         </div>
         <div class="concludeScreen">
+
+            <div>
+                <h2>LeaderBoard</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Wins</th>
+                            <th>Lose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- LEFT FOR AUTOMATIC  -->
+                    </tbody>
+                </table>
+            </div>
+
+
         </div>
     </div>
 
@@ -226,7 +269,7 @@
                 }
                 this.initiateGameScreen();
                 this.baseURL = "http://localhost:9020";
-
+                this.getAllDetails();
 
             }
 
@@ -271,8 +314,38 @@
                 });
                 let response = await request.json();
                 console.log(response);
+
+
                 this.gotoScreen.concludeScreen();
 
+            }
+
+            async getAllDetails() {
+                let request = await fetch(`${this.baseURL}/server.php?get_all='asd'`, {
+                    method: "GET",
+
+
+                });
+
+                document.querySelectorAll("tbody > tr").forEach((e) => {
+                    e.remove();
+                })
+
+                let response = await request.json();
+                response.forEach((e) => {
+                    console.log(e);
+                    let tableRow = document.createElement("tr");
+                    let nameData = document.createElement("td");
+                    nameData.innerHTML = e.name;
+                    let winData = document.createElement("td");
+                    winData.innerHTML = e.win;
+                    let loseData = document.createElement("td");
+                    loseData.innerHTML = e.lose;
+                    tableRow.appendChild(nameData);
+                    tableRow.appendChild(winData);
+                    tableRow.appendChild(loseData);
+                    document.querySelector("tbody").appendChild(tableRow);
+                })
             }
 
 
@@ -327,12 +400,15 @@
                 player1 != player2 ? this.tries-- : "";
                 if (this.tries === 0) {
                     console.log("STOP THE GAME");
+
                     if (this.playerScore > this.computerScore) {
                         this.gameState.win++;
 
                     } else {
                         this.gameState.lose++;
                     }
+                    localStorage.setItem("gameState", JSON.stringify(this.gameState));
+
                     this.gotoScreen.userInputScreen();
                 }
                 this.fillTries();
@@ -355,6 +431,7 @@
                 },
 
                 concludeScreen: () => {
+                    this.getAllDetails();
                     document.querySelector(".appScreen").style.transform = "translateY(-200vh)";
                 }
 
