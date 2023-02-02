@@ -8,8 +8,31 @@
     <title>Document</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: black;
+
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+            overflow: hidden;
+        }
+
+        .appScreen {
+            overflow: hidden;
+            /* height: 100vh; */
+        }
+
+
+
+        .gameScreen {
+            height: 100vh;
         }
 
         .container {
@@ -21,6 +44,7 @@
             color: white;
             display: flex;
             justify-content: space-between;
+            padding-bottom: 2em;
 
         }
 
@@ -41,11 +65,63 @@
             cursor: pointer;
             transition: all 0.6s;
             opacity: 70%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .playerMoves>.button:hover {
             transform: scale(1.05);
             opacity: 100%;
+        }
+
+
+
+        .movesDisplay {
+            display: flex;
+            justify-content: center;
+            gap: 3em;
+            margin-bottom: 3em;
+            color: white;
+            text-align: center;
+
+        }
+
+        .movesDisplay .display {
+            height: 300px;
+            width: 300px;
+            border-radius: 20px;
+            background: white;
+            color: black;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .display>p {
+            width: 100%;
+            font-size: 2em;
+        }
+
+        .button>p {
+            pointer-events: none;
+            text-align: center;
+        }
+
+
+        .tries {
+            color: white;
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            gap: 2em;
+            padding-bottom: 2em;
+
+        }
+
+
+        .concludeScreen {
+            height: 100vh;
         }
     </style>
 </head>
@@ -53,30 +129,52 @@
 <body>
 
 
-    <div class="container">
-        <div class="scoreScreen">
-            <p class="playerScore">
-                Player: 0
-            </p>
-            <p class="computerScore">
-                Computer: 0
-            </p>
+    <div class="appScreen">
+        <div class="gameScreen">
+            <div class="container">
+                <div class="scoreScreen">
+                    <p class="playerScore">
+                        Player: 0
+                    </p>
+                    <p class="computerScore">
+                        Computer: 0
+                    </p>
+                </div>
+                <div class="tries">
+                    <p>Tries Left: </p>
+                    <span></span>
+                    <span>🚀</span>
+                    <span>🚀</span>
+                </div>
+                <div class="movesDisplay">
+                    <div>
+                        <p>Player</p>
+                        <div class="display">
+                            <p class="playerDisplay"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Computer</p>
+                        <div class="display">
+                            <p class="computerDisplay"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="playerMoves">
+                    <div data-move="rock" class="button">
+                        <p>Rock</p>
+                    </div>
+                    <div data-move="paper" class="button">
+                        <p>Paper</p>
+                    </div>
+                    <div data-move="scissor" class="button">
+                        <p>Scissor</p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="playerMoves">
-            <div class="rock button">
-                <p>Rock</p>
-            </div>
-            <div class="rock button">
-                <p>Paper</p>
-
-            </div>
-            <div class="rock button">
-                <p>Scissor</p>
-
-            </div>
+        <div class="concludeScreen">
         </div>
-
     </div>
 
 
@@ -88,14 +186,99 @@
                 this.playerName = "";
                 this.computerScore = 0;
                 this.playerScore = 0;
+                this.addListeners();
+
+                this.tries = 3;
+                this.fillTries();
+                this.playerDisplay = document.querySelector(".playerDisplay");
+                this.computerDisplay = document.querySelector(".computerDisplay");
+
+            }
+
+            fillTries() {
+                document.querySelectorAll(".tries > span").forEach((e) => {
+                    e.remove();
+                });
+
+                [...Array(this.tries)].forEach((_) => {
+                    let span = document.createElement("span");
+                    span.innerHTML = "🚀";
+                    document.querySelector(".tries").appendChild(span);
+                })
+            }
+
+            updateScores() {
+                document.querySelector(".playerScore").innerHTML = `Player: ${this.playerScore}`;
+                document.querySelector(".computerScore").innerHTML = `Computer: ${this.computerScore}`;
             }
 
 
 
+            playComputer() {
+                let choices = ['rock', 'paper', 'scissor'];
+
+                return choices[Math.floor(Math.random() * choices.length)];
+
+            }
+
+            moves = { rock: "rock", paper: "paper", scissor: "scissor" };
+
+            startGame(playerMove) {
+                let player2 = this.playComputer();
+
+                let player1 = playerMove;
+
+                this.playerDisplay.innerHTML = player1.toUpperCase();
+                this.computerDisplay.innerHTML = player2.toUpperCase();
+
+                console.log(`player move: ${player1}, computer move: ${player2}`)
+
+                if (player1 === player2) {
+                    console.log("It's a draw!");
+                } else if (player1 === "rock") {
+                    if (player2 === "scissor") {
+                        console.log("Human wins!");
+                        this.playerScore++;
+                    } else {
+                        console.log("Computer wins!");
+                        this.computerScore++;
+                    }
+                } else if (player1 === "paper") {
+                    if (player2 === "rock") {
+                        console.log("Human wins!");
+                        this.playerScore++;
+                    } else {
+                        console.log("Computer wins!");
+                        this.computerScore++;
+                    }
+                } else if (player1 === "scissor") {
+                    if (player2 === "paper") {
+                        console.log("Human wins!");
+                        this.playerScore++;
+                    } else {
+                        console.log("Computer wins!");
+                        this.computerScore++;
+                    }
+                }
+                this.updateScores();
+
+                player1 != player2 ? this.tries-- : "";
+                if (this.tries === 0) {
+                    console.log("STOP THE GAME");
+                    document.querySelector(".appScreen").style.transform = "translateY(-100vh)";
+                }
+                this.fillTries();
+            }
 
 
+            addListeners() {
+                document.querySelectorAll(".playerMoves > .button").forEach(e => {
 
-
+                    e.addEventListener("click", (e) => {
+                        this.startGame((e.target.getAttribute("data-move")));
+                    })
+                })
+            }
 
         }
 
